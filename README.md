@@ -16,6 +16,8 @@
 
 Concurrent version history based on a Merkle-DAG.
 
+**version + dag = versidag**
+
 
 ## Motivation
 
@@ -25,6 +27,7 @@ This module leverages [Merkle-DAGs](https://en.wikipedia.org/wiki/Merkle_tree) t
 
 - The nodes on Merkle-DAGs are labeled based on their contents, meaning that whenever a merge occurs, they converge to the same label (cid).
 - The tie-breaker is deterministic among replicas, meaning that the total order of versions will be the same among replicas.
+- The [merge](https://github.com/ipfs-shipyard/js-versidag#mergeheadcids-version) operation guarantees that non-concurrent heads are removed.
 
 
 ## Installation
@@ -66,7 +69,7 @@ const versions = await myVersidagD.resolve();
 Creates a versidag instance with the specified heads.
 
 If no `headCids` are supplied it means that it will be headless.
-The config is an object that looks like this:
+The `config` is an object that has the following shape:
 
 ```js
 {
@@ -84,9 +87,11 @@ The config is an object that looks like this:
 }
 ```
 
+All keys are mandatory, except for `concurrency` which defaults to `Infinity`.
+
 **Important considerations**:
 
-- The return value of `writeNode` must be based on the `node` contents, meaning that it should produce that **same result** for the same `node`, across replicas. This is often called a content id or [`cid`](https://github.com/ipld/cid). 
+- The return value of `writeNode` must be based on the `node` contents, meaning that it should produce that **same result** for the same `node`, across replicas. This is often called a content id or [`cid`](https://github.com/ipld/cid).
 - The return value of `tieBreaker` must be **consistent**, that is, for the same arguments it should return exactly the same result, across replicas. In essence, it should be a the same [pure function](https://en.wikipedia.org/wiki/Pure_function) in every replica.
 
 Example:
@@ -183,8 +188,8 @@ Resolves the versions by traversing the DAG.
 
 Available options:
 
-- `limit`: The maximum number of versions to retrieve, defaults to `Infinity`
-- `fromCids`: Start the traversal from these heads instead of the current ones, used for pagination
+- `limit`: The maximum number of versions to retrieve, defaults to `Infinity`.
+- `fromCids`: Start the traversal from these heads instead of the current ones, used for pagination.
 
 Returns an object containing the `versions`. If `limit` was specified, the object also contains the `nextCids` that may be used for the next iteration.
 
@@ -228,7 +233,7 @@ const result2 = versidag.resolve({ limit: 2, fromCids: result1.nextCids });
 //     { version: 'Hello', meta: 2 },
 //     { version: 'Hi', meta: 1 }
 //   ],
-//   nextCids: ['B', 'A'],
+//   nextCids: [],
 // }
 ```
 
