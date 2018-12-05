@@ -21,7 +21,7 @@ Concurrent version history based on a Merkle-DAG.
 
 ## Motivation
 
-In distributed systems, the replicas' clocks aren't reliable to get the total order of versions. This is specially true in p2p networks where the difference in clocks may be exacerbated. There are alternative ways to preserve causality: [Lamport timestamps](https://en.wikipedia.org/wiki/Lamport_timestamps), [Vector clocks](https://en.wikipedia.org/wiki/Vector_clock) or [DAGs](https://en.wikipedia.org/wiki/Directed_acyclic_graph) to name a few.
+In distributed systems, the replicas' clocks aren't reliable to get the total order of versions. This is specially true in p2p networks where the difference in clocks may be exacerbated. There are ways to get a partial order of versions by preserving causality, such as by using [Lamport timestamps](https://en.wikipedia.org/wiki/Lamport_timestamps), [Vector clocks](https://en.wikipedia.org/wiki/Vector_clock) and [DAGs](https://en.wikipedia.org/wiki/Directed_acyclic_graph) to name a few.
 
 This module leverages [Merkle-DAGs](https://en.wikipedia.org/wiki/Merkle_tree) to preserve causality (happen-before) and a tie-breaker to determine the order of concurrent versions. The DAG will converge amongst replicas because:
 
@@ -75,13 +75,13 @@ The `config` is an object that has the following shape:
 {
     // Writes a node, returning its content id
     // This function may return a promise
-    writeNode: (node) => <nodeCid>
+    writeNode: (node) => <nodeCid>,
     // Reads a node by its content id
     // This function may return a promise
-    readNode: (cid) => <node>
+    readNode: (cid) => <node>,
     // A tie-breaker that compares concurrent nodes, where the node's shape is { version, meta }
     // This is a comparator function that must return -1, 1 or 0
-    tieBreaker: (node1, node2) => <number>
+    tieBreaker: (node1, node2) => <number>,
     // The maximum concurrent readNode calls, defaults to Infinity
     concurrency: 10,
 }
@@ -92,7 +92,7 @@ All keys are mandatory, except for `concurrency` which defaults to `Infinity`.
 **Important considerations**:
 
 - The return value of `writeNode` must be based on the `node` contents, meaning that it should produce that **same result** for the same `node`, across replicas. This is often called a content id or [`cid`](https://github.com/ipld/cid).
-- The return value of `tieBreaker` must be **consistent**, that is, for the same arguments it should return exactly the same result, across replicas. In essence, it should be a the same [pure function](https://en.wikipedia.org/wiki/Pure_function) in every replica.
+- The return value of `tieBreaker` must be **consistent**, that is, for the same arguments it should return exactly the same result, across replicas. In essence, it should be the same [pure function](https://en.wikipedia.org/wiki/Pure_function) in all replicas.
 
 Example:
 
@@ -122,11 +122,11 @@ A getter for the underlying DAG heads content ids.
 
 ### .config
 
-A getter for the underlying config
+A getter for the underlying config.
 
 ### .add(version, meta)
 
-Adds a new `version` with the supplied `meta`, creating a new DAG node pointing to the current heads.
+Adds a new `version` with the supplied `meta`, creating a DAG node pointing to the current heads.
 
 Returns a promise that resolves to a new versidag pointing to the new head.
 
@@ -160,15 +160,14 @@ const myVersidagD = await myVersidagB.union(myVersidagC.headCids);
 
 ### .merge(headCids, [version])
 
-Creates a new DAG node pointing to the union of the current heads with the supplied `headCids`, optionally pointing to a `version`.
-
-In case you specify a `version`, it's important the it's consistent across the replicas as well.
-This means that the replicas must converge to the same version. The way the convergence happens is out of the scope of this module, but one possible solution is to use [CRDTs](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type).
+Creates a DAG node pointing to the union of the current heads with the supplied `headCids`, optionally pointing to a `version`.
 
 Any duplicate heads are removed and the final heads will be sorted lexically.   
 Moreover, any non-concurrent heads will be removed so that the result is deterministic among replicas.
 
 Returns a new versidag pointing to the concatenated heads.
+
+In case you specify a `version`, it's important that it is consistent across all replicas. This means that the replicas must converge to the same version. The way the convergence happens is out of the scope of this module, but one possible solution is to use [CRDTs](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type).
 
 Example:
 
@@ -179,7 +178,7 @@ const myVersidagC = await myVersidagA.add('Hi World', 3);
 
 const myVersidagD = await myVersidagB.merge(myVersidagC.headCids);
 
-// myVersidagD points to a head that is a merge node between B and C
+// myVersidagD points to a head that is a merge node pointing B and C
 ```
 
 ### .resolve([options])
@@ -193,8 +192,7 @@ Available options:
 
 Returns an object containing the `versions`. If `limit` was specified, the object also contains the `nextCids` that may be used for the next iteration.
 
-If you don't need to fetch all the versions, you should specific a `limit`.
-This ensures that the traversal will stop as soon as possible.
+If you just need a few versions, you should specify a `limit`. This ensures that the traversal will stop as soon as we get that amount of versions.
 
 Example:
 
