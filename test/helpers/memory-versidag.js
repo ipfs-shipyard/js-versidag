@@ -10,7 +10,7 @@ const createInMemoryVersidag = (headCids, config) => {
     const storage = new Map();
 
     config = {
-        comparator: (node1, node2) => node1.meta - node2.meta,
+        tieBreaker: (node1, node2) => node1.meta - node2.meta,
         readNode: (cid) => Promise.resolve(storage.get(cid)),
         writeNode: (node) => {
             const cid = hashObj(node, { algorithm: 'md5' });

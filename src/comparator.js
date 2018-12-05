@@ -13,7 +13,7 @@ const cidsComparator = (cid1, cid2) => {
     return 0;
 };
 
-const wrapComparator = (comparator) => wrap(comparator, (comparator, entry1, entry2) => {
+const wrapComparator = (tieBreaker) => wrap(tieBreaker, (comparator, entry1, entry2) => {
     const { node: node1, cid: cid1 } = entry1;
     const { node: node2, cid: cid2 } = entry2;
 
@@ -38,7 +38,7 @@ const wrapComparator = (comparator) => wrap(comparator, (comparator, entry1, ent
     }
 
     // Use the user's comparator
-    const result = comparator(node1, node2);
+    const result = tieBreaker(node1, node2);
 
     if (result !== 0) {
         return -result;

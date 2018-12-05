@@ -78,7 +78,7 @@ const resolveVersions = async (headCids, config, limit = Infinity) => {
     config = {
         ...config,
         readNode: memoize(config.readNode),
-        comparator: wrapComparator(config.comparator),
+        comparator: wrapComparator(config.tieBreaker),
     };
 
     const resolvedHeads = await resolveHeads(headCids, config, limit);
