@@ -32,7 +32,7 @@ class Versidag {
 
     async merge(otherHeadCids, version) {
         // Remove any non-concurrent heads
-        const { headCids: resolvedHeadCids } = await resolveHeads(
+        const { headCids } = await resolveHeads(
             canonicalizeCids([...this.headCids, ...otherHeadCids]),
             this.config,
             1
@@ -40,12 +40,12 @@ class Versidag {
 
         // Check if the heads are the same.. if they are, we don't need to merge
         // This is important to keep the merge deterministic
-        if (isEqual(this.headCids, resolvedHeadCids)) {
+        if (isEqual(this.headCids, headCids)) {
             return this;
         }
 
         const dagNode = {
-            parents: resolvedHeadCids,
+            parents: headCids,
         };
 
         if (version != null) {
