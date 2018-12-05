@@ -240,8 +240,10 @@ const result2 = versidag.resolve({ limit: 2, fromCids: result1.nextCids });
 
 ## Tests
 
-`$ npm test`   
-`$ npm test -- --watch` during development
+```sh
+$ npm test
+$ npm test -- --watch  # during development
+```
 
 
 ## License
