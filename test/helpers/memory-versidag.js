@@ -1,25 +1,28 @@
-'use strict';
+import hashObj from 'hash-obj';
+import createVersidag from '../../src';
 
-const { createVersidag } = require('../..');
+const createInMemoryVersidag = (headCids, config) => {
+    if (!Array.isArray(headCids)) {
+        config = headCids;
+        headCids = [];
+    }
 
-const createInMemoryVersidag = (initialVersion, config) => {
     const storage = new Map();
 
     config = {
-        comparator: (version1, version2) => version1.timestamp - version2.timestamp,
-        readNode: (cid) => storage.get(cid),
+        comparator: (node1, node2) => node1.meta - node2.meta,
+        readNode: (cid) => Promise.resolve(storage.get(cid)),
         writeNode: (node) => {
-            const cid = Math.round(Math.random() * (10 ** 10)).toString(36);
+            const cid = hashObj(node, { algorithm: 'md5' });
 
             storage.set(cid, node);
-            console.log('wrote', cid, node);
 
-            return cid;
+            return Promise.resolve(cid);
         },
         ...config,
     };
 
-    return createVersidag(initialVersion, config);
+    return createVersidag(headCids, config);
 };
 
-module.exports = { createInMemoryVersidag };
+export default createInMemoryVersidag;

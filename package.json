@@ -1,8 +1,16 @@
 {
   "name": "versidag",
   "version": "0.0.0",
-  "description": "",
-  "keywords": [],
+  "description": "Concurrent version history based on a Merkle-DAG",
+  "keywords": [
+    "dag",
+    "versions",
+    "history",
+    "parcial-order",
+    "total-order",
+    "deterministic",
+    "p2p"
+  ],
   "author": "André Cruz <andre@moxy.studio>",
   "homepage": "https://github.com/ipfs-shipyard/js-versidag",
   "repository": {
@@ -10,15 +18,17 @@
     "url": "git@github.com:ipfs-shipyard/js-versidag.git"
   },
   "license": "MIT",
-  "main": "lib/index.js",
-  "module": "es/index.js",
+  "main": "src-cjs/index.js",
+  "module": "src/index.js",
   "files": [
-    "lib",
-    "es"
+    "src",
+    "src-cjs"
   ],
   "scripts": {
+    "prebuild": "rimraf src-cjs",
+    "build": "babel src -d src-cjs",
     "lint": "eslint . --ignore-path .gitignore",
-    "test": "jest --env node --coverage",
+    "test": "jest",
     "prerelease": "npm t && npm run lint && npm run build",
     "release": "standard-version"
   },
@@ -44,19 +54,35 @@
       "@commitlint/config-conventional"
     ]
   },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ]
+  },
   "devDependencies": {
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.2.0",
     "@commitlint/cli": "^7.2.1",
     "@commitlint/config-conventional": "^7.1.2",
-    "babel-cli": "^6.26.0",
-    "babel-preset-moxy": "^2.3.5",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
+    "babel-plugin-add-module-exports": "^1.0.0",
     "eslint": "^5.9.0",
     "eslint-config-moxy": "^6.1.1",
+    "hash-obj": "^1.0.0",
     "husky": "^1.2.0",
     "jest": "^23.6.0",
     "lint-staged": "^8.1.0",
+    "regenerator-runtime": "^0.13.1",
+    "rimraf": "^2.6.2",
     "standard-version": "^4.4.0"
   },
   "dependencies": {
-    "lodash": "^4.17.11"
+    "binsert": "^1.0.0",
+    "lodash": "^4.17.11",
+    "p-map": "^2.0.0"
   }
 }

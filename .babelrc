@@ -1,3 +1,5 @@
 {
-    "presets": ["moxy"]
+    "plugins": [
+        "@babel/plugin-transform-modules-commonjs"
+    ]
 }
