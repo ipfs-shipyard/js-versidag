@@ -14,7 +14,7 @@
 [david-dm-dev-url]:https://david-dm.org/ipfs-shipyard/js-versidag?type=dev
 [david-dm-dev-image]:https://img.shields.io/david/dev/ipfs-shipyard/js-versidag.svg
 
-Concurrent version history based on a Merkle-DAG.
+> Concurrent version history based on a Merkle-DAG.
 
 **version + dag = versidag**
 
@@ -40,7 +40,7 @@ $ npm install versidag
 ## Usage
 
 ```js
-const createVersidag = require('versidag');
+import createVersidag from 'versidag';
 
 const myVersidag = createVersidag({
     tieBreaker: (node1, node2) => /* */,
@@ -73,17 +73,17 @@ The `config` is an object that has the following shape:
 
 ```js
 {
-    // Writes a node, returning its content id
-    // This function may return a promise
-    writeNode: (node) => <nodeCid>,
-    // Reads a node by its content id
-    // This function may return a promise
-    readNode: (cid) => <node>,
-    // A tie-breaker that compares concurrent nodes, where the node's shape is { version, meta }
-    // This is a comparator function that must return -1, 1 or 0
-    tieBreaker: (node1, node2) => <number>,
-    // The maximum concurrent readNode calls, defaults to Infinity
-    concurrency: 10,
+  // Writes a node, returning its content id
+  // This function may return a promise
+  writeNode: (node) => <nodeCid>,
+  // Reads a node by its content id
+  // This function may return a promise
+  readNode: (cid) => <node>,
+  // A tie-breaker that compares concurrent nodes, where the node's shape is { version, meta }
+  // This is a comparator function that must return -1, 1 or 0
+  tieBreaker: (node1, node2) => <number>,
+  // The maximum concurrent readNode calls, defaults to Infinity
+  concurrency: 10,
 }
 ```
 
@@ -103,16 +103,16 @@ const nodesMap = new Map();
 
 // Example of a in-memory versidag where the tie-breaker is a simple meta comparison
 const versidag = createVersidag({
-    writeNode: (node) => {
-        // The hash-obj module returns an hash of the object
-        const cid = hashObj(node)
+  writeNode: (node) => {
+    // The hash-obj module returns an hash of the object
+    const cid = hashObj(node)
 
-        nodesMap.set(cid, node);
+    nodesMap.set(cid, node);
 
-        return cid;
-    },
-    readNode: (cid) => nodesMap.get(cid),
-    tieBreaker: (node1, node2) => node1.meta - node2.meta
+    return cid;
+  },
+  readNode: (cid) => nodesMap.get(cid),
+  tieBreaker: (node1, node2) => node1.meta - node2.meta
 });
 ```
 
@@ -133,8 +133,9 @@ Returns a promise that resolves to a new versidag pointing to the new head.
 Example:
 
 ```js
-const createVersidag = require('versidag');
+import createVersidag from 'versidag';
 
+const myVersidag = createVersidag({ /* config */ });
 const myVersidagA = await myVersidag.add('Hi', 1);
 ```
 
@@ -150,6 +151,9 @@ Note that no new DAG node will be written.
 Example:
 
 ```js
+import createVersidag from 'versidag';
+
+const myVersidag = createVersidag({ /* config */ });
 const myVersidagA = await myVersidag.add('Hi', 1);
 const myVersidagB = await myVersidagA.add('Hello', 2);
 const myVersidagC = await myVersidagA.add('Hi World', 3);
@@ -172,6 +176,9 @@ In case you specify a `version`, it's important that it is consistent across all
 Example:
 
 ```js
+import createVersidag from 'versidag';
+
+const myVersidag = createVersidag({ /* config */ });
 const myVersidagA = await myVersidag.add('Hi', 1);
 const myVersidagB = await myVersidagA.add('Hello', 2);
 const myVersidagC = await myVersidagA.add('Hi World', 3);
@@ -197,8 +204,9 @@ If you just need a few versions, you should specify a `limit`. This ensures that
 Example:
 
 ```js
-const versidag = await createVersidag(['D']);
+import createVersidag from 'versidag';
 
+const myVersidag = createVersidag({ /* config */ });
 const myVersidagA = await myVersidag.add('Hi', 1);
 const myVersidagB = await myVersidagA.add('Hello', 2);
 const myVersidagC = await myVersidagA.add('Hi World', 3);
