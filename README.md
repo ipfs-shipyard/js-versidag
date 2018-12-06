@@ -185,7 +185,7 @@ const myVersidagC = await myVersidagA.add('Hi World', 3);
 
 const myVersidagD = await myVersidagB.merge(myVersidagC.headCids);
 
-// myVersidagD points to a head that is a merge node pointing B and C
+// myVersidagD has a single head that is merge node pointing B and C
 ```
 
 ### .resolve([options])
