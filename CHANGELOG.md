@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.1"></a>
+## [0.1.1](https://github.com/ipfs-shipyard/js-versidag/compare/v0.1.0...v0.1.1) (2018-12-10)
+
+
+### Bug Fixes
+
+* ensure meta is not present when undefined ([d09e605](https://github.com/ipfs-shipyard/js-versidag/commit/d09e605))
+
+
+
 <a name="0.1.0"></a>
 # 0.1.0 (2018-12-05)
 
