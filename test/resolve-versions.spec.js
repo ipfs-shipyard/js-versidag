@@ -20,6 +20,29 @@ it('should return an array of { version, meta }', async () => {
     });
 });
 
+it('should omit meta in merge nodes', async () => {
+    const versidagA = await createInMemoryVersidag().add('A', 1);
+    const versidagB = await versidagA.add('B', 2);
+    const versidagC = await versidagA.add('C', 3);
+    const versidagD = await versidagB.merge(versidagC.headCids, 'D');
+
+    const result = await resolveVersions(
+        versidagD.headCids,
+        versidagA.config,
+    );
+
+    expect(result.versions[0]).not.toHaveProperty('meta');
+    expect(result).toEqual({
+        nextCids: [],
+        versions: [
+            { version: 'D' },
+            { version: 'C', meta: 3 },
+            { version: 'B', meta: 2 },
+            { version: 'A', meta: 1 },
+        ],
+    });
+});
+
 describe('scenario 1', () => {
     const versidags = {};
 

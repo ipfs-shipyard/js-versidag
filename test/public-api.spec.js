@@ -250,13 +250,4 @@ describe('resolve', () => {
             versions: ['foo'],
         });
     });
-
-    it('should concatenate, remove duplicates and sort the heads so that they are deterministic', () => {
-        const versidag1 = createVersidag(['B', 'A', 'B'], {});
-        const versidag2 = createVersidag(['D', 'C', 'A'], {});
-
-        const finalVersidag = versidag1.union(versidag2.headCids);
-
-        expect(finalVersidag.headCids).toEqual(['A', 'B', 'C', 'D']);
-    });
 });

@@ -60,7 +60,15 @@ const resolveSequence = async (resolvedHeads, config) => {
 const buildResult = (resolvedSequence, config, limit) => {
     const versions = resolvedSequence
     .slice(0, limit)
-    .map(({ node }) => ({ version: node.version, meta: node.meta }));
+    .map(({ node }) => {
+        const entry = { version: node.version };
+
+        if (node.meta != null) {
+            entry.meta = node.meta;
+        }
+
+        return entry;
+    });
 
     const nextCids = resolvedSequence
     .slice(limit)

@@ -55,7 +55,7 @@ const myVersidagD = await myVersidagB.merge(myVersidagC.headCids, 'Hello World')
 
 const versions = await myVersidagD.resolve();
 // [
-//   { version: 'Hello world' },
+//   { version: 'Hello World' },
 //   { version: 'Hi World', meta: 3 }
 //   { version: 'Hello', meta: 2 }
 //   { version: 'Hi', meta: 1 }
