@@ -75,17 +75,17 @@ The `config` is an object that has the following shape:
 {
   // Writes a node, returning its content id
   // This function may return a promise
-  writeNode: (node, timeout) => <nodeCid>,
+  writeNode: (node, config) => <nodeCid>,
   // The maximum concurrent writeNode calls, defaults to Infinity
   writeConcurrency: 10,
-  // Maximum amount of time to wait for a writeNode to complete, defaults to Infinity
+  // Maximum amount of time to wait for a writeNode to complete, defaults to null
   writeTimeout: 10000,
   // Reads a node by its content id
   // This function may return a promise
-  readNode: (cid, timeout) => <node>,
+  readNode: (cid, config) => <node>,
   // The maximum concurrent writeNode calls, defaults to Infinity
   readConcurrency: 10,
-  // Maximum amount of time to wait for a writeNode to complete, defaults to Infinity
+  // Maximum amount of time to wait for a writeNode to complete, defaults to null
   readTimeout: 10000,
   // A tie-breaker that compares concurrent nodes, where the node's shape is { version, meta }
   // This is a comparator function that must return -1, 1 or 0

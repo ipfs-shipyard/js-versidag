@@ -82,9 +82,9 @@ const getConfig = (config) => {
 
     // Create a new object to avoid mutating it
     config = {
-        readTimeout: Infinity,
+        readTimeout: null,
         readConcurrency: Infinity,
-        writeTimeout: Infinity,
+        writeTimeout: null,
         writeConcurrency: Infinity,
         ...config,
     };

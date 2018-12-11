@@ -5,9 +5,9 @@ it('should set defaults', () => {
 
     expect(config).toMatchObject({
         readConcurrency: Infinity,
-        readTimeout: Infinity,
+        readTimeout: null,
         writeConcurrency: Infinity,
-        writeTimeout: Infinity,
+        writeTimeout: null,
     });
 });
 

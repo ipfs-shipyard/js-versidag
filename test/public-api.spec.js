@@ -65,9 +65,9 @@ describe('factory', () => {
 
         const versidag = createVersidag(config);
 
-        expect(versidag.config.readTimeout).toBe(Infinity);
+        expect(versidag.config.readTimeout).toBe(null);
         expect(versidag.config.readConcurrency).toBe(Infinity);
-        expect(versidag.config.writeTimeout).toBe(Infinity);
+        expect(versidag.config.writeTimeout).toBe(null);
         expect(versidag.config.writeConcurrency).toBe(Infinity);
         expect(typeof versidag.readNode).not.toBe(config.readNode);
         expect(typeof versidag.writeNode).not.toBe(config.writeNode);
