@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/ipfs-shipyard/js-versidag/compare/v0.2.0...v0.2.1) (2018-12-11)
+
+
+### Bug Fixes
+
+* timeouts should be null by default ([33861fa](https://github.com/ipfs-shipyard/js-versidag/commit/33861fa))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/ipfs-shipyard/js-versidag/compare/v0.1.1...v0.2.0) (2018-12-11)
 
