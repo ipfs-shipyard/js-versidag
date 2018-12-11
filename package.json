@@ -1,6 +1,6 @@
 {
   "name": "versidag",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Concurrent version history based on a Merkle-DAG",
   "keywords": [
     "dag",
