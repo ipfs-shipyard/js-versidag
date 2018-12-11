@@ -75,24 +75,31 @@ The `config` is an object that has the following shape:
 {
   // Writes a node, returning its content id
   // This function may return a promise
-  writeNode: (node) => <nodeCid>,
+  writeNode: (node, timeout) => <nodeCid>,
+  // The maximum concurrent writeNode calls, defaults to Infinity
+  writeConcurrency: 10,
+  // Maximum amount of time to wait for a writeNode to complete, defaults to Infinity
+  writeTimeout: 10000,
   // Reads a node by its content id
   // This function may return a promise
-  readNode: (cid) => <node>,
+  readNode: (cid, timeout) => <node>,
+  // The maximum concurrent writeNode calls, defaults to Infinity
+  readConcurrency: 10,
+  // Maximum amount of time to wait for a writeNode to complete, defaults to Infinity
+  readTimeout: 10000,
   // A tie-breaker that compares concurrent nodes, where the node's shape is { version, meta }
   // This is a comparator function that must return -1, 1 or 0
   tieBreaker: (node1, node2) => <number>,
-  // The maximum concurrent readNode calls, defaults to Infinity
-  concurrency: 10,
 }
 ```
 
-All keys are mandatory, except for `concurrency` which defaults to `Infinity`.
+The `writeNode`, `readNode` and `tieBreaker` are mandatory.
 
 **Important considerations**:
 
 - The return value of `writeNode` must be based on the `node` contents, meaning that it should produce that **same result** for the same `node`, across replicas. This is often called a content id or [`cid`](https://github.com/ipld/cid).
 - The return value of `tieBreaker` must be **consistent**, that is, for the same arguments it should return exactly the same result, across replicas. In essence, it should be the same [pure function](https://en.wikipedia.org/wiki/Pure_function) in all replicas.
+- The `readNode` and `writeNode` must take into consideration their respective timeout configurations in case they perform async I/O. In simpler cases, you might use [p-timeout](https://github.com/sindresorhus/p-timeout) which plays nicely with promises created with [p-cancelable](https://github.com/sindresorhus/p-cancelable).
 
 Example:
 

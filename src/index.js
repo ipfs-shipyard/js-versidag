@@ -1,6 +1,7 @@
 import { sortedUniq, isEqual } from 'lodash';
 import resolveHeads from './resolve-heads';
 import resolveVersions from './resolve-versions';
+import getConfig from './config';
 
 const canonicalizeCids = (headCids) => sortedUniq(headCids.sort());
 
@@ -75,18 +76,13 @@ class Versidag {
 }
 
 const createVersidag = (headCids, config) => {
-    // Allow heads to be optinal
+    // Allow heads to be optional
     if (!Array.isArray(headCids)) {
         config = headCids;
         headCids = [];
     }
 
-    // Ensure concurrency is set
-    if (config.concurrency == null) {
-        config.concurrency = Infinity;
-    }
-
-    return new Versidag(headCids, config);
+    return new Versidag(headCids, getConfig(config));
 };
 
 export default createVersidag;

@@ -18,33 +18,60 @@ afterEach(() => {
 });
 
 describe('factory', () => {
-    it('should return a versidag instance', () => {
+    it('should return a versidag instance, with the correct heads', () => {
         const config = {
-            readNode: () => {},
-            writeNode: () => {},
-            comparator: () => {},
-            concurrency: 10,
+            readNode: () => 'read',
+            writeNode: () => 'write',
+            tieBreaker: () => 'tie-breaker',
         };
 
-        const versidag = createVersidag(config);
+        const versidag = createVersidag(['foo'], config);
 
-        expect(versidag.headCids).toEqual([]);
-        expect(versidag.config).toEqual(config);
+        expect(versidag.headCids).toEqual(['foo']);
+        expect(typeof versidag.config).toBe('object');
         expect(typeof versidag.add).toBe('function');
         expect(typeof versidag.union).toBe('function');
         expect(typeof versidag.merge).toBe('function');
     });
 
-    it('should configure concurrency to Infinity by default', () => {
-        const versidag = createVersidag({});
+    it('should return a versidag instance, with the no heads', () => {
+        const config = {
+            readNode: () => 'read',
+            writeNode: () => 'write',
+            tieBreaker: () => 'tie-breaker',
+        };
 
-        expect(versidag.config.concurrency).toBe(Infinity);
+        const versidag = createVersidag(config);
+
+        expect(versidag.headCids).toEqual([]);
+        expect(typeof versidag.config).toBe('object');
+        expect(typeof versidag.add).toBe('function');
+        expect(typeof versidag.union).toBe('function');
+        expect(typeof versidag.merge).toBe('function');
     });
 
     it('should remove duplicates and sort the heads so that they are deterministic', () => {
         const versidag = createVersidag(['B', 'A', 'C', 'B'], {});
 
         expect(versidag.headCids).toEqual(['A', 'B', 'C']);
+    });
+
+    it('should call getConfig', () => {
+        const config = {
+            readNode: () => 'read',
+            writeNode: () => 'write',
+            tieBreaker: () => 'tie-breaker',
+        };
+
+        const versidag = createVersidag(config);
+
+        expect(versidag.config.readTimeout).toBe(Infinity);
+        expect(versidag.config.readConcurrency).toBe(Infinity);
+        expect(versidag.config.writeTimeout).toBe(Infinity);
+        expect(versidag.config.writeConcurrency).toBe(Infinity);
+        expect(typeof versidag.readNode).not.toBe(config.readNode);
+        expect(typeof versidag.writeNode).not.toBe(config.writeNode);
+        expect(typeof versidag.tieBreaker).not.toBe(config.tieBreaker);
     });
 });
 
@@ -74,7 +101,7 @@ describe('add', () => {
             parents: [],
             version: 'foo',
             meta: 1,
-        });
+        }, versidag.config);
     });
 
     it('should add a new version with the right parents', async () => {
@@ -91,12 +118,12 @@ describe('add', () => {
             parents: [],
             version: 'foo',
             meta: 1,
-        });
+        }, versidagA.config);
         expect(config.writeNode).toHaveBeenNthCalledWith(2, {
             parents: ['abc'],
             version: 'bar',
             meta: 2,
-        });
+        }, versidagA.config);
     });
 });
 
@@ -205,7 +232,7 @@ describe('merge', () => {
         expect(config.writeNode).toHaveBeenCalledTimes(1);
         expect(config.writeNode).toHaveBeenCalledWith({
             parents: ['bar', 'foo'],
-        });
+        }, versidag1.config);
     });
 
     it('should create a merge node with a version', async () => {
@@ -222,7 +249,7 @@ describe('merge', () => {
         expect(config.writeNode).toHaveBeenCalledWith({
             parents: ['bar', 'foo'],
             version: 'baz',
-        });
+        }, versidag1.config);
     });
 });
 

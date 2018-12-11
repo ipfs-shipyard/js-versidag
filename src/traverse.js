@@ -14,7 +14,7 @@ const createTraverser = (config) => async (headCids, iteratorFn, addToStackFn = 
         };
 
         addToStackFn(stack, entry);
-    }, { concurrency: config.concurrency });
+    });
 
     await expand(headCids, null);
 

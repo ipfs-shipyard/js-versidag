@@ -2,20 +2,23 @@ import { memoize } from 'lodash';
 import binsert from 'binsert';
 import resolveHeads from './resolve-heads';
 import createTraverser from './traverse';
-import wrapComparator from './comparator';
 
 const resolveSequence = async (resolvedHeads, config) => {
     const { headCids, ancestorCid } = resolvedHeads;
-    const { comparator } = config;
+    const { tieBreaker } = config;
     const traverse = createTraverser(config);
 
     const sequence = [];
+    const sequenceMap = new Map();
 
     const addToSequence = (entry) => {
-        const index = sequence.findIndex(({ cid }) => cid === entry.cid);
+        // If the entry is already in the sequence, remove it first!
+        if (sequenceMap.has(entry.cid)) {
+            const index = sequence.findIndex(({ cid }) => cid === entry.cid);
 
-        if (index !== -1) {
             sequence.splice(index, 1);
+        } else {
+            sequenceMap.set(entry.cid, true);
         }
 
         sequence.push(entry);
@@ -44,7 +47,7 @@ const resolveSequence = async (resolvedHeads, config) => {
             // A binary insert is used because the stack is already ordered
             } else {
                 binsert({
-                    compare: (entry1, entry2) => comparator(entry1, entry2),
+                    compare: (entry1, entry2) => tieBreaker(entry1, entry2),
                     get: (index) => stack[index],
                     insert: (index, value) => { stack.splice(index, 0, value); },
                     length: stack.length,
@@ -82,11 +85,9 @@ const buildResult = (resolvedSequence, config, limit) => {
 
 const resolveVersions = async (headCids, config, limit = Infinity) => {
     // Memoize readNode so that lookups to the same cid are only made once
-    // Also wrap comparator so that it sorts in reverse order
     config = {
         ...config,
         readNode: memoize(config.readNode),
-        comparator: wrapComparator(config.tieBreaker),
     };
 
     const resolvedHeads = await resolveHeads(headCids, config, limit);
